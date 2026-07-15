@@ -45,7 +45,7 @@ Domain knowledge for the implementer:
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test test/"
+    "test": "node --test"
   }
 }
 ```

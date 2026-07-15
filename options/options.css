@@ -1,0 +1,26 @@
+:root { color-scheme: light dark; }
+body { font-family: system-ui, sans-serif; margin: 0; padding: 2rem;
+  background: light-dark(#f7f6f3, #1c1b1a); color: light-dark(#2b2a28, #e8e6e1); }
+main { max-width: 44rem; margin: 0 auto; }
+.hint { opacity: 0.7; }
+fieldset { border: 1px solid light-dark(#d8d4cb, #45423e); border-radius: 8px;
+  margin: 0 0 1rem; padding: 1rem; }
+legend { padding: 0 0.4rem; font-weight: 600; }
+label { display: block; margin: 0.6rem 0 0.2rem; font-size: 0.85rem; opacity: 0.8; }
+input[type="text"], input[type="number"], textarea {
+  font: inherit; width: 100%; box-sizing: border-box; padding: 0.4rem 0.6rem;
+  border: 1px solid light-dark(#c9c4ba, #4a4844); border-radius: 6px;
+  background: light-dark(#fff, #2a2927); color: inherit; }
+textarea { min-height: 4rem; resize: vertical; }
+.row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; }
+.checkbox-line { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem; }
+.checkbox-line label { margin: 0; display: inline; }
+.group-meta { font-size: 0.85rem; opacity: 0.7; margin-top: 0.5rem; }
+.toolbar { display: flex; gap: 0.75rem; align-items: center; }
+button { font: inherit; padding: 0.45rem 1rem; border-radius: 6px; cursor: pointer;
+  border: 1px solid light-dark(#c9c4ba, #4a4844);
+  background: light-dark(#fff, #2a2927); color: inherit; }
+button.primary { background: light-dark(#2b2a28, #e8e6e1);
+  color: light-dark(#fff, #1c1b1a); border-color: transparent; }
+button.danger { color: light-dark(#a02c2c, #e07a7a); }
+#status { opacity: 0.7; font-size: 0.9rem; }
