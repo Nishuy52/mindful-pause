@@ -67,3 +67,39 @@ test("ensureDay: keeps state for same day, resets on new day or missing", () => 
     sessionUntilByGroup: {},
   });
 });
+
+test("opensUsed and hasActiveSession defaults", () => {
+  const now = Date.now();
+  const state = L.freshState(now);
+  assert.equal(L.opensUsed(state, "g1"), 0);
+  assert.equal(L.hasActiveSession(state, "g1", now), false);
+});
+
+test("grantOpen: increments opens, sets wall-clock session end", () => {
+  const now = 1_000_000;
+  const s1 = L.grantOpen(L.freshState(now), social, 10, now);
+  assert.equal(L.opensUsed(s1, "g1"), 1);
+  assert.equal(s1.sessionUntilByGroup.g1, now + 10 * 60_000);
+  assert.equal(L.hasActiveSession(s1, "g1", now + 9 * 60_000), true);
+  assert.equal(L.hasActiveSession(s1, "g1", now + 10 * 60_000), false);
+});
+
+test("grantOpen: clamps duration to maxMinutesPerOpen", () => {
+  const now = 0;
+  const s1 = L.grantOpen(L.freshState(now), social, 60, now);
+  assert.equal(s1.sessionUntilByGroup.g1, 15 * 60_000);
+});
+
+test("isBlocked: only when strictBlocking and opens exhausted", () => {
+  const now = 0;
+  let state = L.freshState(now);
+  for (let i = 0; i < 5; i++) state = L.grantOpen(state, social, 1, now);
+  assert.equal(L.isBlocked(social, state), false); // default: informational only
+  const strict = { ...social, strictBlocking: true };
+  assert.equal(L.isBlocked(strict, state), true);
+  assert.equal(L.isBlocked(strict, L.freshState(now)), false);
+});
+
+test("allowanceChoices: filtered to maxMinutesPerOpen", () => {
+  assert.deepEqual(L.allowanceChoices(social), [1, 5, 10, 15]);
+});

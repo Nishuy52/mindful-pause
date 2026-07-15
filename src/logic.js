@@ -44,3 +44,34 @@ export function ensureDay(state, now) {
   if (!state || state.day !== localDayString(now)) return freshState(now);
   return state;
 }
+
+export function opensUsed(state, groupId) {
+  return state.opensUsedByGroup[groupId] ?? 0;
+}
+
+export function hasActiveSession(state, groupId, now) {
+  return (state.sessionUntilByGroup[groupId] ?? 0) > now;
+}
+
+export function isBlocked(group, state) {
+  return !!group.strictBlocking && opensUsed(state, group.id) >= group.maxOpensPerDay;
+}
+
+export function allowanceChoices(group) {
+  return group.allowanceOptions.filter((m) => m <= group.maxMinutesPerOpen);
+}
+
+export function grantOpen(state, group, minutes, now) {
+  const chosen = Math.min(minutes, group.maxMinutesPerOpen);
+  return {
+    ...state,
+    opensUsedByGroup: {
+      ...state.opensUsedByGroup,
+      [group.id]: opensUsed(state, group.id) + 1,
+    },
+    sessionUntilByGroup: {
+      ...state.sessionUntilByGroup,
+      [group.id]: now + chosen * 60_000,
+    },
+  };
+}
