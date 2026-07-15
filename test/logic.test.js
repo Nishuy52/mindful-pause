@@ -38,3 +38,32 @@ test("normalizeDomain: strips scheme, path, whitespace, case", () => {
   assert.equal(L.normalizeDomain("reddit.com/r/all"), "reddit.com");
   assert.equal(L.normalizeDomain("x.com"), "x.com");
 });
+
+test("localDayString: local date as YYYY-MM-DD", () => {
+  const d = new Date(2026, 6, 15, 23, 59).getTime(); // July 15 2026, local
+  assert.equal(L.localDayString(d), "2026-07-15");
+});
+
+test("ensureDay: keeps state for same day, resets on new day or missing", () => {
+  const now = new Date(2026, 6, 15, 12, 0).getTime();
+  const state = {
+    day: "2026-07-15",
+    opensUsedByGroup: { g1: 3 },
+    sessionUntilByGroup: { g1: now + 60000 },
+  };
+  assert.equal(L.ensureDay(state, now), state);
+
+  const nextDay = new Date(2026, 6, 16, 0, 1).getTime();
+  const reset = L.ensureDay(state, nextDay);
+  assert.deepEqual(reset, {
+    day: "2026-07-16",
+    opensUsedByGroup: {},
+    sessionUntilByGroup: {},
+  });
+
+  assert.deepEqual(L.ensureDay(null, now), {
+    day: "2026-07-15",
+    opensUsedByGroup: {},
+    sessionUntilByGroup: {},
+  });
+});

@@ -29,3 +29,18 @@ export function normalizeDomain(input) {
     .replace(/^https?:\/\//, "")
     .split("/")[0];
 }
+
+export function localDayString(epochMs) {
+  const d = new Date(epochMs);
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+export function freshState(now) {
+  return { day: localDayString(now), opensUsedByGroup: {}, sessionUntilByGroup: {} };
+}
+
+export function ensureDay(state, now) {
+  if (!state || state.day !== localDayString(now)) return freshState(now);
+  return state;
+}
