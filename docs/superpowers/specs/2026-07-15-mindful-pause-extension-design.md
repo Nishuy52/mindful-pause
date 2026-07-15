@@ -18,8 +18,11 @@ Firefox-based; the same extension works unchanged).
   (e.g., *Social* = reddit.com, x.com). Each group has a **max number of opens
   per day** and a **max duration per open**. Choosing a duration on the pause
   page consumes one open and starts a wall-clock session for the whole group.
-  When opens are exhausted, the group is blocked until the next day. There is
-  no cumulative time budget and no usage-time tracking.
+  Exceeding the max opens does **not** block by default — the count keeps
+  going (e.g., "7 opens used of 5") purely for awareness. Each group has an
+  optional **strict blocking** toggle; when enabled, exhausted opens mean the
+  group is blocked until the next day. There is no cumulative time budget and
+  no usage-time tracking.
 - **Wall-clock sessions:** a session lasts its chosen duration in real time
   from the moment it is granted, regardless of tab focus. When it expires,
   any tab still on the group's domains is redirected back to the pause page.
@@ -60,17 +63,20 @@ One WebExtension, three parts:
   whole group, and navigates to the original URL. Other tabs in the same
   group pass through freely while the session is active; they do not consume
   additional opens.
-- If the group's opens are exhausted: no duration buttons, just an "out of
-  opens for today" message. (Settings can still raise the limit — honor
-  system.)
+- If the group's opens are exhausted: by default the duration buttons remain,
+  but the page makes the overage plain (e.g., "You're past your 5 opens —
+  this would be open #7"). If the group has **strict blocking** enabled, the
+  duration buttons are removed and an "out of opens for today" message is
+  shown instead. (Settings can still raise the limit or disable strict mode —
+  honor system.)
 
 ### 3. Options page
 
 - Manage groups: create, rename, delete.
 - Assign domains to groups (each flagged domain belongs to exactly one group;
   a match on `example.com` includes subdomains).
-- Per group: max opens per day, max minutes per open, pause countdown
-  (seconds), allowance duration options.
+- Per group: max opens per day, max minutes per open, strict blocking on/off
+  (default off), pause countdown (seconds), allowance duration options.
 - Show opens used today per group.
 
 ## Data model
@@ -84,6 +90,7 @@ Stored in `storage.local`:
     domains: ["reddit.com", "x.com"],
     maxOpensPerDay: 5,
     maxMinutesPerOpen: 15,
+    strictBlocking: false,          // true: exhausted opens block until tomorrow
     pauseSeconds: 10,
     allowanceOptions: [1, 5, 10, 15, 30, 60]   // minutes; filtered to ≤ maxMinutesPerOpen
   }],
@@ -115,9 +122,9 @@ Stored in `storage.local`:
   opens arithmetic, day rollover, session-window checks, allowance-option
   filtering.
 - Manual verification in Firefox via `about:debugging` temporary add-on load:
-  pause flow, session grant and expiry redirect, opens exhaustion,
-  midnight/lazy reset, same-group second tab passing through without
-  consuming an open.
+  pause flow, session grant and expiry redirect, opens overage message
+  (default) vs. blocked page (strict), midnight/lazy reset, same-group second
+  tab passing through without consuming an open.
 
 ## Non-goals
 
