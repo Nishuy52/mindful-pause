@@ -55,8 +55,9 @@ One WebExtension, three parts:
   budget, a configurable breathing countdown (default 10 s) during which
   continue buttons are disabled.
 - After the countdown: buttons for the group's allowance options (default
-  5/10/15 min) and "Never mind" (goes back in tab history if there is a
-  previous page, otherwise closes the tab).
+  1/5/10/15/30/60 min; options longer than the group's remaining budget are
+  hidden) and "Never mind" (goes back in tab history if there is a previous
+  page, otherwise closes the tab).
 - If the group's budget is spent: no continue buttons, just a "budget spent
   for today" message. (Settings can still raise the limit — honor system.)
 - Choosing an allowance opens an allowance window for the whole group and
@@ -82,7 +83,7 @@ Stored in `storage.local`:
     domains: ["reddit.com", "x.com"],
     dailyLimitMinutes: 30,
     pauseSeconds: 10,
-    allowanceOptions: [5, 10, 15]   // minutes
+    allowanceOptions: [1, 5, 10, 15, 30, 60]   // minutes
   }],
   state: {
     day: "2026-07-15",              // local date; mismatch triggers lazy reset
